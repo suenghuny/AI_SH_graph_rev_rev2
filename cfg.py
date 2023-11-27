@@ -78,7 +78,7 @@ def get_cfg():
     # 이녀석이 찐임
     parser.add_argument("--graph_distance", type=float, default=20, help="graph distance")
     # 이녀석이 찐임
-    parser.add_argument("--bonus_reward", type=float, default=10, help="bonus_reward")
+    parser.add_argument("--bonus_reward", type=float, default=3, help="bonus_reward")
     # 이녀석이 찐임
     parser.add_argument("--optimizer", type=str, default='ADAM', help="optimizer")
     parser.add_argument("--entropy", type=bool, default=False, help="entropy")
