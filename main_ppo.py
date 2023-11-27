@@ -148,7 +148,7 @@ if __name__ == "__main__":
         print("시작")
         from torch.utils.tensorboard import SummaryWriter
 
-        output_dir = "../output_susceptibility/"
+        output_dir = "output_susceptibility/"
         writer = SummaryWriter('./logs2')
         import os
 

@@ -351,7 +351,7 @@ class Agent:
             self.scheduler.step()
         if cfg.algorithm == 'kl_penalty':
             self.adaptive_beta = 1.7
-            self.kl_target = 0.01
+            self.kl_target =cfg.kl_target
             for i in range(self.K_epoch):
                 obs, act_graph = self.get_node_representation(ship_feature,missile_node_feature,heterogeneous_edges,mini_batch=True)
                 obs_next = self.get_ship_representation(ship_feature_next)

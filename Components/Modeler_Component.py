@@ -800,7 +800,6 @@ class Environment:
     def step(self, action_blue, action_yellow, rl = True, pass_transition = False):
 
         self.f11_deque.append(action_blue)
-        #print(np.concatenate(list(self.f11_deque)).shape)
         self.f11 = action_blue
 
         #print(self.f11.shape)
@@ -1039,14 +1038,14 @@ class Environment:
                         self.last_check_lose = True
                     elif (len(self.enemies) == 0) and (len(self.friendlies) != 0):  # win
                         done = True
-                        reward += 10
+                        reward += cfg.bonus_reward
                         win_tag = 'win'
                         self.last_check_win = True
                         #print(reward, len(self.friendlies), len(self.enemies))
                     elif (False not in done_checker_A) and (False not in done_checker_B): # draw
                         done = True
                         win_tag = 'draw'
-                        reward += 10
+                        reward += cfg.bonus_reward
                     else: pass
                     leaker = len(self.enemies_fixed_list) - len(self.enemies)
 
@@ -1067,19 +1066,19 @@ class Environment:
                         self.last_check_lose = True
                     elif (len(self.enemies) == 0) and (len(self.friendlies) != 0):  # win
                         done = True
-                        reward += 10
+                        reward += cfg.bonus_reward
                         win_tag = 'win'
                         self.last_check_win = True
                         #print(reward, len(self.friendlies), len(self.enemies))
                     elif (False not in done_checker_A) and (False not in done_checker_B): # draw
                         done = True
                         win_tag = 'draw'
-                        reward += 10
+                        reward += cfg.bonus_reward
                     else:
                         done = True
                         if False not in done_checker_A:
                             win_tag = 'draw'
-                            reward += 10
+                            reward += cfg.bonus_reward
                         else:
                             win_tag = 'draw_4502'
                             reward += 0
