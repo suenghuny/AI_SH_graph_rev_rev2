@@ -1,11 +1,13 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from collections import OrderedDict
-from GDN import NodeEmbedding
+import torch.distributions as dist
 import torch
 import torch.optim as optim
 from torch.optim.lr_scheduler import StepLR
+from collections import OrderedDict
+from GDN import NodeEmbedding
+
 from GAT.model import GAT
 from GAT.layers import device
 from cfg import get_cfg
@@ -13,6 +15,7 @@ import numpy as np
 from GCRN.model import GCRN
 cfg = get_cfg()
 from torch.distributions import Categorical
+
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 class PPONetwork(nn.Module):
@@ -349,7 +352,45 @@ class Agent:
             torch.nn.utils.clip_grad_norm_(self.eval_params, cfg.grad_clip)
             self.optimizer.step()
             self.scheduler.step()
+        if cfg.algorithm == 'kl_penalty':
+            for i in range(self.K_epoch):
+                obs, act_graph = self.get_node_representation(ship_feature,missile_node_feature,heterogeneous_edges,mini_batch=True)
+                obs_next = self.get_ship_representation(ship_feature_next)
+                v_s = self.network.v(obs)
+                td_target = reward.unsqueeze(1) + self.gamma * self.network.v(obs_next) * (1-done).unsqueeze(1)
+                delta = td_target - v_s
+                delta = delta.cpu().detach().numpy()
+                advantage_lst = []
+                advantage = 0.0
+                for delta_t in delta[ : :-1]:
+                    advantage = self.gamma * self.lmbda * advantage + delta_t[0]
+                    advantage_lst.append([advantage])
+                advantage_lst.reverse()
+                advantage = torch.tensor(advantage_lst, dtype=torch.float).to(device)
 
+                mask = avail_action_blue
+
+                obs_expand = obs.unsqueeze(1).expand([obs.shape[0], act_graph.shape[1], obs.shape[1]])
+                obs_n_act = torch.cat([obs_expand, act_graph], dim= 2)
+                logit = torch.stack([self.network.pi(obs_n_act[:, i]) for i in range(self.action_size)])
+                logit = torch.einsum('ijk->jik', logit).squeeze(2)
+                mask = mask.squeeze(1)
+                logit = logit.masked_fill(mask == 0, -1e8)
+                pi = torch.softmax(logit, dim=-1)
+                pi_a = pi.gather(1, a_indices)
+                ratio = torch.exp(torch.log(pi_a) - torch.log(prob).detach())  # a/b == exp(log(a)-log(b))
+                surr1 = ratio * advantage.detach()
+                surr2 = torch.clamp(ratio, 1 - self.eps_clip, 1 + self.eps_clip) * advantage.detach()
+                if cfg.entropy == True:
+                    entropy = -torch.sum(torch.exp(pi) * pi, dim=1)
+                    loss = - torch.min(surr1, surr2) + 0.5 * F.smooth_l1_loss(v_s, td_target.detach()) -0.01*entropy.mean()# 수정 + 엔트로피
+                else:
+                    loss = - torch.min(surr1, surr2) + 0.5 * F.smooth_l1_loss(v_s, td_target.detach())
+                self.optimizer.zero_grad()
+                loss.mean().backward()
+                torch.nn.utils.clip_grad_norm_(self.eval_params, cfg.grad_clip)
+                self.optimizer.step()
+                self.scheduler.step()
         if cfg.algorithm == 'ppo':
             for i in range(self.K_epoch):
                 obs, act_graph = self.get_node_representation(ship_feature,missile_node_feature,heterogeneous_edges,mini_batch=True)
@@ -395,9 +436,6 @@ class Agent:
                 torch.nn.utils.clip_grad_norm_(self.eval_params, cfg.grad_clip)
                 self.optimizer.step()
                 self.scheduler.step()
-
-            #avg_loss += loss.mean().item()
-
         return avg_loss / self.K_epoch
 
     def save_network(self, e, file_dir):

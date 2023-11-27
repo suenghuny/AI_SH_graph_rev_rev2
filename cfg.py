@@ -54,13 +54,9 @@ def get_cfg():
     parser.add_argument("--interval_min_blue", type=bool, default=True, help="interval_min_blue")
     parser.add_argument("--interval_constant_blue", type=float, default=1, help="interval_constant_blue")
     parser.add_argument("--action_history_step", type=int, default=4, help="action_history_step")
-
-
-
     parser.add_argument("--grad_clip", type=float, default=0.5, help="gradient clipping")
     parser.add_argument("--grad_clip_step", type=int, default=50000, help="gradient clipping step")
     parser.add_argument("--grad_clip_reduce", type=float, default=0.5, help="reduced_gradient clipping")
-
     parser.add_argument("--test_epi", type=int, default=1800, help="interval_constant_blue")
     parser.add_argument("--scheduler", type=str, default='step', help="step 형태")
     parser.add_argument("--t_max", type=int, default=40000, help="interval_constant_blue")
@@ -83,4 +79,6 @@ def get_cfg():
     parser.add_argument("--entropy", type=bool, default=True, help="entropy")
     parser.add_argument("--seed", type=int, default=1234, help="random seed")
     parser.add_argument("--algorithm", type=str, default='ppo', help="algorithm")
+    parser.add_argument("--leakyrelu", type=bool, default=False, help="attention mechanism leaky relu")
+    parser.add_argument("--negativeslope", type=float, default=0.05, help="leaky relu negative slope")
     return parser.parse_args()

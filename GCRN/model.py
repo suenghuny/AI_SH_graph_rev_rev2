@@ -81,13 +81,16 @@ class GCRN(nn.Module):
 
     #def forward(self, A, X, num_nodes=None, mini_batch=False):
     def _prepare_attentional_mechanism_input(self, Wq, Wv,A, e, mini_batch):
-
         Wh1 = Wq
         Wh2 = Wv
         e = Wh1 @ Wh2.T
         E = A.clone().float()
         E[E == 0.] = 1e-8
-        return e*E
+        if cfg.leakyrelu == True:
+            return F.leaky_relu(e*E, negative_slope=cfg.negativeslope)
+        else:
+            return e*E
+
     def forward(self, A, X, mini_batch, layer = 0):
         if mini_batch == False:
             temp = list()
