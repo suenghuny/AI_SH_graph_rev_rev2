@@ -78,7 +78,7 @@ def get_cfg():
     parser.add_argument("--optimizer", type=str, default='ADAM', help="optimizer")
     parser.add_argument("--entropy", type=bool, default=True, help="entropy")
     parser.add_argument("--seed", type=int, default=1234, help="random seed")
-    parser.add_argument("--algorithm", type=str, default='kl_penalty', help="algorithm")
+    parser.add_argument("--algorithm", type=str, default='actor_critic', help="algorithm")
     parser.add_argument("--leakyrelu", type=bool, default=False, help="attention mechanism leaky relu")
     parser.add_argument("--negativeslope", type=float, default=0.05, help="leaky relu negative slope")
     return parser.parse_args()

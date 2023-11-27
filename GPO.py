@@ -333,17 +333,19 @@ class Agent:
             pi = torch.softmax(logit, dim=-1)
             pi_a = pi.gather(1, a_indices)
             log_prob = torch.log(pi_a)  # a/b == exp(log(a)-log(b))
+
             loss1 = log_prob * advantage.detach()
+
             if cfg.entropy == True:
                 entropy = -torch.sum(torch.exp(pi) * pi, dim=1)
-                loss = -loss1 + 0.5 * F.smooth_l1_loss(v_s, td_target.detach()) - 0.01 * entropy.mean()  # 수정 + 엔트로피
+                loss = -loss1.mean() + 0.5 * F.smooth_l1_loss(v_s, td_target.detach()) - 0.01 * entropy.mean()  # 수정 + 엔트로피
             else:
-                loss = -loss1 + 0.5 * F.smooth_l1_loss(v_s, td_target.detach())
+                loss = -loss1.mean() + 0.5 * F.smooth_l1_loss(v_s, td_target.detach())
 
             # print(-torch.sum(torch.exp(pi) * pi, dim=1))
 
             self.optimizer.zero_grad()
-            loss.mean().backward()
+            loss.backward()
             torch.nn.utils.clip_grad_norm_(self.eval_params, cfg.grad_clip)
             self.optimizer.step()
             self.scheduler.step()
@@ -373,17 +375,17 @@ class Agent:
                 logit = logit.masked_fill(mask == 0, -1e8)
                 pi = torch.softmax(logit, dim=-1)
                 pi_a = pi.gather(1, a_indices)
-                ratio = torch.exp(torch.log(pi_a) - torch.log(prob).detach())  # a/b == exp(log(a)-log(b))
-                kl_penalty = torch.log(prob).detach()*(torch.log(prob).detach() - torch.log(pi_a))
-                surr1 = ratio * advantage.detach()
+                ratio = torch.exp(torch.log(pi_a.squeeze(1)) - torch.log(prob).detach())  # a/b == exp(log(a)-log(b))
+                kl_penalty = torch.log(prob).detach()*(torch.log(prob).detach() - torch.log(pi_a.squeeze(1)))
+                surr1 = ratio * (advantage.detach().squeeze())
                 surr = surr1 - self.adaptive_beta * kl_penalty
                 if cfg.entropy == True:
                     entropy = -torch.sum(torch.exp(pi) * pi, dim=1)
-                    loss = - surr + 0.5 * F.smooth_l1_loss(v_s, td_target.detach()) -0.01*entropy.mean()# 수정 + 엔트로피
+                    loss = - surr.mean() + 0.5 * F.smooth_l1_loss(v_s, td_target.detach()) -0.01*entropy.mean()# 수정 + 엔트로피
                 else:
-                    loss = - surr + 0.5 * F.smooth_l1_loss(v_s, td_target.detach())
+                    loss = - surr.mean() + 0.5 * F.smooth_l1_loss(v_s, td_target.detach())
                 self.optimizer.zero_grad()
-                loss.mean().backward()
+                loss.backward()
                 torch.nn.utils.clip_grad_norm_(self.eval_params, cfg.grad_clip)
                 self.optimizer.step()
                 self.scheduler.step()
@@ -419,21 +421,17 @@ class Agent:
                 logit = logit.masked_fill(mask == 0, -1e8)
                 pi = torch.softmax(logit, dim=-1)
                 pi_a = pi.gather(1, a_indices)
-                ratio = torch.exp(torch.log(pi_a) - torch.log(prob).detach())  # a/b == exp(log(a)-log(b))
-                surr1 = ratio * advantage.detach()
-                surr2 = torch.clamp(ratio, 1 - self.eps_clip, 1 + self.eps_clip) * advantage.detach()
+                ratio = torch.exp(torch.log(pi_a.squeeze(1)) - torch.log(prob).detach())  # a/b == exp(log(a)-log(b))
+                surr1 = ratio * (advantage.detach().squeeze())
+                surr2 = torch.clamp(ratio, 1 - self.eps_clip, 1 + self.eps_clip) * (advantage.detach().squeeze())
                 if cfg.entropy == True:
                     entropy = -torch.sum(torch.exp(pi) * pi, dim=1)
-                    loss = - torch.min(surr1, surr2) + 0.5 * F.smooth_l1_loss(v_s, td_target.detach()) -0.01*entropy.mean()# 수정 + 엔트로피
+                    loss = - torch.min(surr1, surr2).mean() + 0.5 * F.smooth_l1_loss(v_s, td_target.detach()) -0.01*entropy.mean()# 수정 + 엔트로피
                 else:
-                    loss = - torch.min(surr1, surr2) + 0.5 * F.smooth_l1_loss(v_s, td_target.detach())
-
-                #print(-torch.sum(torch.exp(pi) * pi, dim=1))
-
-
+                    loss = - torch.min(surr1, surr2).mean() + 0.5 * F.smooth_l1_loss(v_s, td_target.detach())
 
                 self.optimizer.zero_grad()
-                loss.mean().backward()
+                loss.backward()
                 torch.nn.utils.clip_grad_norm_(self.eval_params, cfg.grad_clip)
                 self.optimizer.step()
                 self.scheduler.step()
