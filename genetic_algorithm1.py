@@ -32,7 +32,6 @@ def simulation(solution):
             score += 1/n
         else:
             score += 0
-
     print(score, solution)
     return score
 
