@@ -76,6 +76,7 @@ class GCRN(nn.Module):
 
         self.embedding_layers = NodeEmbedding(graph_embedding_size*num_edge_cat, embedding_size, layers).to(device)
         self.a = [nn.Parameter(torch.empty(size=(2 * graph_embedding_size, 1))) for i in range(num_edge_cat)]
+        self.a = nn.ParameterList(self.a)
         [nn.init.xavier_uniform_(self.a[e].data, gain=1.414) for e in range(num_edge_cat)]
 
 
@@ -85,12 +86,12 @@ class GCRN(nn.Module):
         Wh2 = Wv
         e = Wh1 @ Wh2.T
         E = A.clone().float()
-        #E[E == 0.] = 1e-8
-        #E[E == 0.] = 1e-8
+        E[E == 0.] = -1e8
+
         if cfg.leakyrelu == True:
             return F.leaky_relu(e, negative_slope=cfg.negativeslope)
         else:
-            return e
+            return e@E
 
     def forward(self, A, X, mini_batch, layer = 0):
         if mini_batch == False:
@@ -104,8 +105,7 @@ class GCRN(nn.Module):
                 Wv = X @ self.Wv[e]
                 a = self._prepare_attentional_mechanism_input(Wq, Wv, E, e, mini_batch = mini_batch)
                 a = F.softmax(a, dim = 1)
-
-                H = a*E@Wh
+                H = a@Wh
                 temp.append(H)
 
 
