@@ -85,7 +85,7 @@ class GCRN(nn.Module):
         Wh2 = Wv
         e = Wh1 @ Wh2.T
         E = A.clone().float()
-        E[E == 0.] = 1e-8
+        E[E == 0.] = -1e+8
         if cfg.leakyrelu == True:
             return F.leaky_relu(e*E, negative_slope=cfg.negativeslope)
         else:
