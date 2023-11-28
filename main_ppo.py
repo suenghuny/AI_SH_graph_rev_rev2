@@ -111,13 +111,10 @@ def evaluation(agent, env):
             edge_index_sam_to_ssm = env.get_sam_to_ssm_edge_index()
             edge_index_ship_to_sam = env.get_ship_to_sam_edge_index()
             edge_index_ship_to_enemy = env.get_ship_to_enemy_edge_index()
-
             heterogeneous_edges = (edge_index_ssm_to_ship, edge_index_ssm_to_ssm, edge_index_sam_to_ssm, edge_index_ship_to_sam, edge_index_ship_to_enemy)
-
             ship_feature = env.get_ship_feature()
             missile_node_feature, node_cats = env.get_missile_node_feature()
             action_feature = env.get_action_feature()
-
             agent.eval_check(eval=True)
             action_blue, prob, mask, a_index= agent.sample_action(ship_feature, missile_node_feature,heterogeneous_edges,avail_action_blue,action_feature)
             action_yellow = agent_yellow.get_action(avail_action_yellow, target_distance_yellow, air_alert_yellow)
