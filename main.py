@@ -15,11 +15,11 @@ def preprocessing(scenarios):
     scenario = scenarios[0]
     if mode == 'txt':
         if vessl_on == True:
-            input_path = ["/root/AI_SH_graph_rev_rev1/Data/{}/ship.txt".format(scenario),
-                          "/root/AI_SH_graph_rev_rev1/Data/{}/patrol_aircraft.txt".format(scenario),
-                          "/root/AI_SH_graph_rev_rev1/Data/{}/SAM.txt".format(scenario),
-                          "/root/AI_SH_graph_rev_rev1/Data/{}/SSM.txt".format(scenario),
-                          "/root/AI_SH_graph_rev_rev1/Data/{}/inception.txt".format(scenario)]
+            input_path = ["/root/AI_SH_graph_rev_rev2/Data/{}/ship.txt".format(scenario),
+                          "/root/AI_SH_graph_rev_rev2/Data/{}/patrol_aircraft.txt".format(scenario),
+                          "/root/AI_SH_graph_rev_rev2/Data/{}/SAM.txt".format(scenario),
+                          "/root/AI_SH_graph_rev_rev2/Data/{}/SSM.txt".format(scenario),
+                          "/root/AI_SH_graph_rev_rev2/Data/{}/inception.txt".format(scenario)]
         else:
             input_path = ["Data/{}/ship.txt".format(scenario),
                           "Data/{}/patrol_aircraft.txt".format(scenario),

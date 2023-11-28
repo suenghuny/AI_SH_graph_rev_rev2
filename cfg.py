@@ -72,14 +72,16 @@ def get_cfg():
     parser.add_argument("--temp_constant", type=float, default=1, help="")
     parser.add_argument("--init_constant", type=int, default=10000, help="")
     parser.add_argument("--cuda", type=str, default='cuda:0', help="")
+
     parser.add_argument("--num_action_history", type=int, default=10, help="")
     # 이녀석이 찐임
     parser.add_argument("--discr_n", type=int, default=10, help="")
     # 이녀석이 찐임
     parser.add_argument("--graph_distance", type=float, default=20, help="graph distance")
     # 이녀석이 찐임
-    parser.add_argument("--bonus_reward", type=float, default=3, help="bonus_reward")
+    parser.add_argument("--bonus_reward", type=float, default=2, help="bonus_reward")
     # 이녀석이 찐임
+
     parser.add_argument("--optimizer", type=str, default='ADAM', help="optimizer")
     parser.add_argument("--entropy", type=bool, default=False, help="entropy")
     parser.add_argument("--seed", type=int, default=1234, help="random seed")
