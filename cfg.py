@@ -39,7 +39,8 @@ def get_cfg():
     parser.add_argument("--teleport_probability", type=float, default=1.0, help="teleport_probability")
     parser.add_argument("--gtn_beta", type=float, default=0.05, help="teleport_probability")
     parser.add_argument("--gamma", type=float, default=.99, help="discount ratio")
-    parser.add_argument("--lr", type=float, default=1e-4, help="learning rate")
+    parser.add_argument("--lr", type=float, default=0.8e-4, help="learning rate")
+    parser.add_argument("--lr_min", type=float, default=0.5e-4, help="lr_min")
     parser.add_argument("--lr_critic", type=float, default=1e-3, help="learning rate")
     parser.add_argument("--n_multi_head", type=int, default=1, help="number of multi head")
     parser.add_argument("--num_episode", type=int, default=1000000, help="number of episode")
@@ -80,6 +81,7 @@ def get_cfg():
     # 이녀석이 찐임
     parser.add_argument("--bonus_reward", type=float, default=2, help="bonus_reward")
     # 이녀석이 찐임
+
 
     parser.add_argument("--optimizer", type=str, default='ADAM', help="optimizer")
     parser.add_argument("--entropy", type=bool, default=False, help="entropy")

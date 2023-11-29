@@ -434,7 +434,8 @@ class Agent:
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(self.eval_params, cfg.grad_clip)
                 self.optimizer.step()
-                self.scheduler.step()
+                if self.optimizer.param_groups[0]['lr'] >= cfg.lr_min:
+                    self.scheduler.step()
         return avg_loss / self.K_epoch
 
     def save_network(self, e, file_dir):
