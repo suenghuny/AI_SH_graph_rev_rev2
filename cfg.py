@@ -39,7 +39,7 @@ def get_cfg():
     parser.add_argument("--teleport_probability", type=float, default=1.0, help="teleport_probability")
     parser.add_argument("--gtn_beta", type=float, default=0.05, help="teleport_probability")
     parser.add_argument("--gamma", type=float, default=.99, help="discount ratio")
-    parser.add_argument("--lr", type=float, default=0.88e-4, help="learning rate")
+    parser.add_argument("--lr", type=float, default=1e-4, help="learning rate")
     parser.add_argument("--lr_critic", type=float, default=1e-3, help="learning rate")
     parser.add_argument("--n_multi_head", type=int, default=1, help="number of multi head")
     parser.add_argument("--num_episode", type=int, default=1000000, help="number of episode")
@@ -62,7 +62,7 @@ def get_cfg():
     parser.add_argument("--t_max", type=int, default=40000, help="interval_constant_blue")
     parser.add_argument("--lmbda", type=float, default=0.95, help="GAE lmbda")
     parser.add_argument("--eps_clip", type=float, default=0.178, help="clipping epsilon")
-    parser.add_argument("--K_epoch", type=int, default=2, help="K-epoch")
+    parser.add_argument("--K_epoch", type=int, default=1, help="K-epoch")
     parser.add_argument("--num_GT_layers", type=int, default=2, help="num GT layers")
     parser.add_argument("--channels", type=int, default=1, help="channels")
     parser.add_argument("--num_layers", type=int, default=2, help="num layers")
@@ -72,7 +72,6 @@ def get_cfg():
     parser.add_argument("--temp_constant", type=float, default=1, help="")
     parser.add_argument("--init_constant", type=int, default=10000, help="")
     parser.add_argument("--cuda", type=str, default='cuda:0', help="")
-
     parser.add_argument("--num_action_history", type=int, default=10, help="")
     # 이녀석이 찐임
     parser.add_argument("--discr_n", type=int, default=10, help="")
@@ -88,6 +87,6 @@ def get_cfg():
     parser.add_argument("--algorithm", type=str, default='ppo', help="algorithm")
     parser.add_argument("--leakyrelu", type=bool, default=False, help="attention mechanism leaky relu")
     parser.add_argument("--kl_target", type=float, default=0.005, help="kl target")
-    parser.add_argument("--negativeslope", type=float, default=0.05, help="leaky relu negative slope")
+    parser.add_argument("--negativeslope", type=float, default=0.15, help="leaky relu negative slope")
 
     return parser.parse_args()

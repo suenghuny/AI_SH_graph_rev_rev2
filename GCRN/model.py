@@ -75,23 +75,32 @@ class GCRN(nn.Module):
         [glorot(W) for W in self.Wq]
 
         self.embedding_layers = NodeEmbedding(graph_embedding_size*num_edge_cat, embedding_size, layers).to(device)
+
         self.a = [nn.Parameter(torch.empty(size=(2 * graph_embedding_size, 1))) for i in range(num_edge_cat)]
         self.a = nn.ParameterList(self.a)
         [nn.init.xavier_uniform_(self.a[e].data, gain=1.414) for e in range(num_edge_cat)]
 
-
-    #def forward(self, A, X, num_nodes=None, mini_batch=False):
-    def _prepare_attentional_mechanism_input(self, Wq, Wv,A, e, mini_batch):
+    def _prepare_attentional_mechanism_input(self, Wq, Wv, A, e, mini_batch):
         Wh1 = Wq
+        Wh1 = torch.matmul(Wh1, self.a[e][:self.graph_embedding_size, : ])
         Wh2 = Wv
-        e = Wh1 @ Wh2.T
-        E = A.clone().float()
-        E[E == 0.] = -1e8
+        Wh2 = torch.matmul(Wh2, self.a[e][self.graph_embedding_size:, :])
+        e = Wh1 + Wh2.T
 
-        if cfg.leakyrelu == True:
-            return F.leaky_relu(e, negative_slope=cfg.negativeslope)
-        else:
-            return e@E
+        return F.leaky_relu(e, negative_slope=cfg.negativeslope)
+
+
+
+    # def _prepare_attentional_mechanism_input(self, Wq, Wv,A, e, mini_batch):
+    #     Wh1 = Wq
+    #     Wh2 = Wv
+    #     e = Wh1 @ Wh2.T
+    #     E = A.clone().float()
+    #     E[E == 0.] = -1e8
+    #     if cfg.leakyrelu == True:
+    #         return F.leaky_relu(e, negative_slope=cfg.negativeslope)
+    #     else:
+    #         return e@E
 
     def forward(self, A, X, mini_batch, layer = 0):
         if mini_batch == False:
@@ -99,13 +108,15 @@ class GCRN(nn.Module):
             for e in range(len(A)):
                 E = A[e]
                 num_nodes = X.shape[0]
-                E = torch.sparse_coo_tensor(E, torch.ones(torch.tensor(E).shape[1]), (num_nodes, num_nodes)).to(device).to_dense()
+                E = torch.sparse_coo_tensor(E, torch.ones(torch.tensor(E).shape[1]), (num_nodes, num_nodes)).long().to(device).to_dense()
                 Wh = X @ self.Ws[e]
                 Wq = X @ self.Wq[e]
                 Wv = X @ self.Wv[e]
                 a = self._prepare_attentional_mechanism_input(Wq, Wv, E, e, mini_batch = mini_batch)
+                zero_vec = -9e15 * torch.ones_like(E)
+                a = torch.where(E > 0, a, zero_vec)
                 a = F.softmax(a, dim = 1)
-                H = a@Wh
+                H = torch.matmul(a, Wh)
                 temp.append(H)
 
 
