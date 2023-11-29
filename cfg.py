@@ -83,7 +83,7 @@ def get_cfg():
     # 이녀석이 찐임
 
 
-    parser.add_argument("--optimizer", type=str, default='ADAM', help="optimizer")
+    parser.add_argument("--optimizer", type=str, default='AdaHessian', help="optimizer")
     parser.add_argument("--entropy", type=bool, default=False, help="entropy")
     parser.add_argument("--seed", type=int, default=1234, help="random seed")
     parser.add_argument("--algorithm", type=str, default='ppo', help="algorithm")

@@ -7,6 +7,7 @@ import torch.optim as optim
 from torch.optim.lr_scheduler import StepLR
 from collections import OrderedDict
 from GDN import NodeEmbedding
+from ada_hessian import AdaHessian
 
 from GAT.model import GAT
 from GAT.layers import device
@@ -119,8 +120,12 @@ class Agent:
                            list(self.func_meta_path.parameters()) + \
                            list(self.func_meta_path2.parameters())
 
-
-        self.optimizer = optim.Adam(self.eval_params, lr=learning_rate)
+        if cfg.optimizer == 'AdaHessian':
+            self.optimizer = AdaHessian(self.eval_params, lr=learning_rate)
+        if cfg.optimizer == 'LBFGS':
+            self.optimizer = optim.LBFGS(self.eval_params, lr=learning_rate)
+        if cfg.optimizer == 'ADAM':
+            self.optimizer = optim.Adam(self.eval_params, lr=learning_rate)  #
         self.scheduler = StepLR(optimizer=self.optimizer, step_size=cfg.scheduler_step, gamma=cfg.scheduler_ratio)
 
         self.dummy_node = [[[0] * feature_size_missile for _ in range(i)] for i in range(n_node_feature_missile)]
@@ -431,7 +436,10 @@ class Agent:
                     loss = - torch.min(surr1, surr2).mean() + 0.5 * F.smooth_l1_loss(v_s, td_target.detach())
 
                 self.optimizer.zero_grad()
-                loss.backward()
+                if type(self.optimizer) == AdaHessian:
+                    loss.backward(create_graph=True)
+                else:
+                    loss.backward()
                 torch.nn.utils.clip_grad_norm_(self.eval_params, cfg.grad_clip)
                 self.optimizer.step()
                 if self.optimizer.param_groups[0]['lr'] >= cfg.lr_min:
