@@ -373,7 +373,7 @@ class Agent:
             # self.batch_store[6].append(self.prob_list)
             # self.batch_store[7].append(self.done_list)
             # self.batch_store[8].append(self.avail_action_blue_list)
-            # self.batch_store[9].append(self.a_index_list)
+            # self.batch_store[9].append(self.a_index_list) ##
             #
             #
             # self.ship_feature_list = list()
@@ -695,7 +695,7 @@ class Agent:
 
 
                     if l == 0:
-                        cum_loss = loss
+                        cum_loss = loss #
                     else:
                         cum_loss = cum_loss+loss
 
