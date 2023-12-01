@@ -82,13 +82,15 @@ def train(agent, env, t):
                           avail_action_blue,
                           a_index)
             agent.put_data(transition)
+
         else:
             pass_transition = True
             env.step(action_blue=[0, 0, 0, 0, 0, 0, 0, 0], action_yellow=enemy_action_for_transition,pass_transition=pass_transition)
 
-
     agent.eval_check(eval=False)
-    agent.learn()
+    if len(agent.batch_store) % cfg.n_data_parallelism==0:
+        agent.learn()
+
     return episode_reward, win_tag, t
 
 
