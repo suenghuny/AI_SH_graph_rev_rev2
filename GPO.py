@@ -271,7 +271,7 @@ class Agent:
             temp = list()
             for mnf in missile_node_feature:
                 temp.append(torch.cat([torch.tensor(mnf), torch.tensor(self.dummy_node[max_len - len(mnf)])], dim=0).tolist())
-
+            #
             missile_node_feature = torch.tensor(temp, dtype=torch.float).to(device)
             node_representation_graph = self.func_meta_path(A=edge_index_missile, X=missile_node_feature, mini_batch=mini_batch)
             node_representation_graph = self.func_meta_path2(A=edge_index_missile, X=node_representation_graph, mini_batch=mini_batch)
