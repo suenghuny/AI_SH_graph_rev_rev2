@@ -86,7 +86,7 @@ def get_cfg():
     parser.add_argument("--bonus_reward", type=float, default=5, help="bonus_reward")
     # 이녀석이 찐임
 
-    parser.add_argument("--optimizer", type=str, default='ADAM', help="optimizer")
+    parser.add_argument("--optimizer", type=str, default='ADAMW', help="optimizer")
     parser.add_argument("--entropy", type=bool, default=True, help="entropy")
     parser.add_argument("--seed", type=int, default=1234, help="random seed")
     parser.add_argument("--algorithm", type=str, default='ppo', help="algorithm")
