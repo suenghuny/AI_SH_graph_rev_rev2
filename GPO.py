@@ -695,9 +695,9 @@ class Agent:
 
 
                     if l == 0:
-                        cum_loss = loss #
+                        cum_loss = loss/cfg.n_data_parallelism
                     else:
-                        cum_loss = cum_loss+loss
+                        cum_loss = cum_loss+loss/cfg.n_data_parallelism
 
                 if type(self.optimizer) == AdaHessian:
                     cum_loss.backward(create_graph=True)
