@@ -63,7 +63,7 @@ def get_cfg():
     parser.add_argument("--t_max", type=int, default=40000, help="interval_constant_blue")
     parser.add_argument("--lmbda", type=float, default=0.95, help="GAE lmbda")
     parser.add_argument("--eps_clip", type=float, default=0.18, help="clipping epsilon")
-    parser.add_argument("--eps_clip_step", type=float, default=0.002, help="clipping epsilon")
+    parser.add_argument("--eps_clip_step", type=float, default=0.02, help="clipping epsilon")
     parser.add_argument("--eps_clip_min", type=float, default=0.1, help="clipping epsilon")
     parser.add_argument("--K_epoch", type=int, default=2, help="K-epoch")
     parser.add_argument("--num_GT_layers", type=int, default=2, help="num GT layers")
@@ -73,14 +73,15 @@ def get_cfg():
     parser.add_argument("--n_eval", type=int, default=1, help="number of evaluation")
     parser.add_argument("--with_noise", type=bool, default=False, help="")
     parser.add_argument("--temp_constant", type=float, default=1, help="")
-    parser.add_argument("--init_constant", type=int, default=10000, help="")
+    parser.add_argument("-"
+                        "-init_constant", type=int, default=10000, help="")
     parser.add_argument("--cuda", type=str, default='cuda:0', help="")
     parser.add_argument("--num_action_history", type=int, default=10, help="")
 
     # 이녀석이 찐임
     parser.add_argument("--discr_n", type=int, default=10, help="")
     # 이녀석이 찐임
-    parser.add_argument("--graph_distance", type=float, default=30, help="graph distance")
+    parser.add_argument("--graph_distance", type=float, default=20, help="graph distance")
     # 이녀석이 찐임
     parser.add_argument("--bonus_reward", type=float, default=10, help="bonus_reward")
     # 이녀석이 찐임
@@ -92,7 +93,7 @@ def get_cfg():
     parser.add_argument("--leakyrelu", type=bool, default=False, help="attention mechanism leaky relu")
     parser.add_argument("--kl_target", type=float, default=0.005, help="kl target")
     parser.add_argument("--negativeslope", type=float, default=0.15, help="leaky relu negative slope")
-    parser.add_argument("--n_data_parallelism", type=int, default=3, help="data parallelism")
+    parser.add_argument("--n_data_parallelism", type=int, default=1, help="data parallelism")
     parser.add_argument("--k_hop", type=int, default=3, help="gnn k")
 
     return parser.parse_args()
