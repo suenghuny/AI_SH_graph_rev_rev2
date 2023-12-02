@@ -148,6 +148,7 @@ class GCRN(nn.Module):
                     zero_vec = -9e15 * torch.ones_like(E)
                     a = torch.where(E > 0, a, zero_vec)
                     a = F.softmax(a, dim=1)
+                    a = F.dropout(a, p=0.1)
                     H = torch.matmul(a,Wh)
                     empty[b, :, e, :].copy_(H)
 

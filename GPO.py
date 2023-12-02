@@ -179,6 +179,10 @@ class Agent:
             self.optimizer = optim.LBFGS(self.eval_params, lr=learning_rate)
         if cfg.optimizer == 'ADAM':
             self.optimizer = optim.Adam(self.eval_params, lr=learning_rate)  #
+        if cfg.optimizer == 'RMSprop':
+            self.optimizer = optim.RMSprop(self.eval_params, lr=learning_rate)  #
+        if cfg.optimizer == 'ADAMW':
+            self.optimizer = optim.AdamW(self.eval_params, lr=learning_rate)  #
         self.scheduler = StepLR(optimizer=self.optimizer, step_size=cfg.scheduler_step, gamma=cfg.scheduler_ratio)
 
         self.dummy_node = [[[0] * feature_size_missile for _ in range(i)] for i in range(n_node_feature_missile)]
