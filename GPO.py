@@ -184,7 +184,7 @@ class Agent:
         if cfg.optimizer == 'ADAMW':
             self.optimizer = optim.AdamW(self.eval_params, lr=learning_rate)  #
         if cfg.optimizer == 'RADAM':
-            self.optimizer = optim.RAdam(self.eval_params, lr=learning_rate)  #
+            self.optimizer = optim.RAdam(self.eval_params, lr=learning_rate)  ###
 
         self.scheduler = StepLR(optimizer=self.optimizer, step_size=cfg.scheduler_step, gamma=cfg.scheduler_ratio)
 
