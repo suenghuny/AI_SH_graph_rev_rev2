@@ -282,33 +282,14 @@ class Agent:
             missile_node_feature = torch.tensor(temp, dtype=torch.float).to(device)
             node_representation_graph = self.func_meta_path(A=edge_index_missile, X=missile_node_feature, mini_batch=mini_batch)
             node_representation_graph = self.func_meta_path2(A=edge_index_missile, X=node_representation_graph, mini_batch=mini_batch)
-            if cfg.k_hop == 3:
-                node_representation_graph = self.func_meta_path3(A=edge_index_missile, X=node_representation_graph,
-                                                                 mini_batch=mini_batch)
-
-            if cfg.k_hop == 4:
-                node_representation_graph = self.func_meta_path3(A=edge_index_missile, X=node_representation_graph,
-                                                                 mini_batch=mini_batch)
-                node_representation_graph = self.func_meta_path4(A=edge_index_missile, X=node_representation_graph,
-                                                                 mini_batch=mini_batch)
-
-            if cfg.k_hop == 5:
-                node_representation_graph = self.func_meta_path3(A=edge_index_missile, X=node_representation_graph,
-                                                                 mini_batch=mini_batch)
-                node_representation_graph = self.func_meta_path4(A=edge_index_missile, X=node_representation_graph,
-                                                                 mini_batch=mini_batch)
-                node_representation_graph = self.func_meta_path5(A=edge_index_missile, X=node_representation_graph,
-                                                                 mini_batch=mini_batch)
-
-            if cfg.k_hop == 6:
-                node_representation_graph = self.func_meta_path3(A=edge_index_missile, X=node_representation_graph,
-                                                                 mini_batch=mini_batch)
-                node_representation_graph = self.func_meta_path4(A=edge_index_missile, X=node_representation_graph,
-                                                                 mini_batch=mini_batch)
-                node_representation_graph = self.func_meta_path5(A=edge_index_missile, X=node_representation_graph,
-                                                                 mini_batch=mini_batch)
-                node_representation_graph = self.func_meta_path6(A=edge_index_missile, X=node_representation_graph,
-                                                                 mini_batch=mini_batch)
+            node_representation_graph = self.func_meta_path3(A=edge_index_missile, X=node_representation_graph,
+                                                             mini_batch=mini_batch)
+            node_representation_graph = self.func_meta_path4(A=edge_index_missile, X=node_representation_graph,
+                                                             mini_batch=mini_batch)
+            node_representation_graph = self.func_meta_path5(A=edge_index_missile, X=node_representation_graph,
+                                                             mini_batch=mini_batch)
+            node_representation_graph = self.func_meta_path6(A=edge_index_missile, X=node_representation_graph,
+                                                             mini_batch=mini_batch)
             node_representation = torch.cat([node_embedding_ship_features], dim=1)
             return node_representation, node_representation_graph
 
@@ -355,56 +336,6 @@ class Agent:
             self.done_list = list()
             self.avail_action_blue_list = list()
             self.a_index_list = list()
-
-
-            # ship_feature_list = batch_data[0]
-            # missile_node_feature_list = batch_data[1]
-            # heterogeneous_edges_list = batch_data[2]
-            # action_feature_list = batch_data[3]
-            # action_blue_list = batch_data[4]
-            # reward_list = batch_data[5]
-            # prob_list = batch_data[6]
-            # mask_list = batch_data[7]
-            # done_list = batch_data[8]
-            # avail_action_blue_list = batch_data[9]
-            # a_index_list = batch_data[10]
-
-
-
-            # self.batch_store[0].append(self.ship_feature_list)
-            # self.batch_store[1].append(self.missile_node_feature_list)
-            # self.batch_store[2].append(self.heterogeneous_edges_list)
-            # self.batch_store[3].append(self.action_feature_list)
-            # self.batch_store[4].append(self.action_blue_list)
-            # self.batch_store[5].append(self.reward_list)
-            # self.batch_store[6].append(self.prob_list)
-            # self.batch_store[7].append(self.done_list)
-            # self.batch_store[8].append(self.avail_action_blue_list)
-            # self.batch_store[9].append(self.a_index_list) ##
-            #
-            #
-            # self.ship_feature_list = list()
-            # self.missile_node_feature_list = list()
-            # self.heterogeneous_edges_list = list()
-            # self.action_feature_list = list()
-            # self.action_blue_list = list()
-            # self.reward_list = list()
-            # self.prob_list = list()
-            # self.done_list = list()
-            # self.avail_action_blue_list = list()
-            # self.a_index_list = list()
-
-        # else:
-        #     self.ship_feature_list.append(transition[0])
-        #     self.missile_node_feature_list.append(transition[1])
-        #     self.heterogeneous_edges_list.append(transition[2])
-        #     self.action_feature_list.append(transition[3])
-        #     self.action_blue_list.append(transition[4])
-        #     self.reward_list.append(transition[5])
-        #     self.prob_list.append(transition[6])
-        #     self.done_list.append(transition[7])
-        #     self.avail_action_blue_list.append(transition[8])
-        #     self.a_index_list.append(transition[9])
 
     def make_batch2(self, batch_data):
         ship_feature_list = batch_data[0]
@@ -721,19 +652,28 @@ class Agent:
         self.batch_store = list()
         return avg_loss / self.K_epoch
 
+    def load_network(self, file_dir):
+        print(file_dir)
+        checkpoint = torch.load(file_dir)
+        self.network.load_state_dict(checkpoint["network"])
+        self.node_representation_ship_feature.load_state_dict(checkpoint["node_representation_ship_feature"])
+        self.func_meta_path.load_state_dict(checkpoint["func_meta_path"])
+        self.func_meta_path2.load_state_dict(checkpoint["func_meta_path2"])
+        self.func_meta_path3.load_state_dict(checkpoint["func_meta_path3"])
+        self.func_meta_path4.load_state_dict(checkpoint["func_meta_path4"])
+        self.func_meta_path5.load_state_dict(checkpoint["func_meta_path5"])
+        self.func_meta_path6.load_state_dict(checkpoint["func_meta_path6"])
+
     def save_network(self, e, file_dir):
-
-        # self.eval_params = list(self.network.parameters()) + \
-        #                    list(self.node_representation_ship_feature.parameters()) + \
-        #                    list(self.func_meta_path.parameters()) + \
-        #                    list(self.func_meta_path2.parameters())
-
-
         torch.save({"episode": e,
                     "network": self.network.state_dict(),
                     "node_representation_ship_feature": self.node_representation_ship_feature.state_dict(),
                     "func_meta_path": self.func_meta_path.state_dict(),
                     "func_meta_path2": self.func_meta_path2.state_dict(),
+                    "func_meta_path3": self.func_meta_path3.state_dict(),
+                    "func_meta_path4": self.func_meta_path4.state_dict(),
+                    "func_meta_path5": self.func_meta_path5.state_dict(),
+                    "func_meta_path6": self.func_meta_path6.state_dict(),
                     "optimizer_state_dict": self.optimizer.state_dict()},
                    file_dir + "episode%d.pt" % e)
 
